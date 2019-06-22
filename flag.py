@@ -11,28 +11,25 @@ CIRCLE_INNER = 'o'
 
 def arg_parser():
     """
-    This function gather parameter of the flag from users,
-    and call function clean to check the input parameter
-    :return: clear input parameter as integer
+    This function gather parameter of the flag from command-line
+    :return: parameter as integer
     """
     parser = argparse.ArgumentParser(description='generate Japanese flag')
-    input_arg = parser.add_argument('N', type=int, help='parameter N should be integer, positive and even')
+    parser.add_argument('N', type=int, help='parameter N should be integer, positive and even')
     parameter = parser.parse_args().N
-    clean_parameter = clear(parameter, input_arg)
-    return clean_parameter
+    return parameter
 
 
-def clear(parameter: int, input_arg):
+def clear(parameter: int):
     """
     This function check if the input parameter is integer, even and positive,
-    and raise an Exception if it is not
+    and raise an exception "ArgumentError" if it is not
     :param parameter: input data from user
-    :param input_arg: argument to raise an Exception
     :return: clear input parameter as integer
     """
     if parameter > 0 and parameter % 2 == 0:
         return parameter
-    raise argparse.ArgumentError(input_arg, 'ArgumentError: parameter N should be integer, positive and even')
+    raise ArgumentError('parameter N should be integer, positive and even')
 
 
 def mirror_update(lst: list):
@@ -42,6 +39,13 @@ def mirror_update(lst: list):
     """
     for i in range(0, len(lst) // 2):
         lst[len(lst)-i-1] = lst[i]
+
+
+class ArgumentError(Exception):
+    """
+    Class to generate an ArgumentException
+    """
+    pass
 
 
 class Flag:
@@ -61,7 +65,7 @@ class Flag:
 
     def __str__(self):
         """
-        reload of the method __str__
+        Reload of the method __str__,
         transform self.flag as a list of lists into string with "\n" separator between lists
         """
         string_flag = ''
@@ -88,7 +92,7 @@ class JapaneseFlag(Flag):
 
     def create_half_pic(self):
         """
-        create the top part of the circle
+        Create the top part of the circle
         by going line by line from top horizontal_pic_border to the middle of the high of the flag
         and from left vertical_pic_border to the meddle of current line and after make mirror_update for this line
         """
@@ -108,27 +112,28 @@ class JapaneseFlag(Flag):
 
     def create_full_pic(self):
         """
-        create a full picture of the circle by making a mirror_update for whole flag
+        Create a full picture of the circle by making a mirror_update for whole flag
         """
         self.create_half_pic()
         mirror_update(self.flag)
 
 
-def flag():
+def flag(flag_parameter: int):
     """
-    create a Japanese flag like ASCII art
+    Create a Japanese flag like ASCII art
     """
     try:
-        flag_parameter = arg_parser()
-        flag = JapaneseFlag(flag_parameter)
+        clear_parameter = clear(flag_parameter)
+        flag = JapaneseFlag(clear_parameter)
         flag.create_full_pic()
+        print(flag)
         return flag
-    except argparse.ArgumentError as err:
-        print(err)
+    except ArgumentError as err:
+        print('ArgumentError: {}'.format(err))
     except Exception as err:
         print('Application error: {}!\n Please, contact support'.format(err))
 
 
 if __name__ == '__main__':
-    japan_flag = flag()
-    print(japan_flag)
+    flag_parameter = arg_parser()
+    japan_flag = flag(flag_parameter)
