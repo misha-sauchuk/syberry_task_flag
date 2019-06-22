@@ -37,8 +37,7 @@ def mirror_update(lst: list):
     This function change the second half-part of the list like a mirror reflection
     of the first half-part of the list
     """
-    for i in range(0, len(lst) // 2):
-        lst[len(lst)-i-1] = lst[i]
+    lst[len(lst)//2:] = lst[len(lst)//2-1::-1]
 
 
 class ArgumentError(Exception):
